@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Смены рядом — Авито Подработка</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{font-family:Manrope,system-ui,-apple-system,Arial,sans-serif;color:#141414;background:#fff}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+button,select,input{font:inherit}button{cursor:pointer} [hidden]{display:none!important}
+.shell{height:100dvh;max-width:1550px;margin:0 auto;padding:10px 12px 12px;display:flex;flex-direction:column;gap:9px}
+.top{height:46px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;padding:0 2px}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.logo{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border-radius:11px;background:#02D15C;font-size:24px;font-weight:800;color:#101010;line-height:1}
+.h1{font-size:18px;letter-spacing:-.65px;font-weight:800;white-space:nowrap}
+.source{font-size:10px;font-weight:650;color:#8f8f8f;display:flex;align-items:center;gap:6px}
+.dot{height:6px;width:6px;border-radius:50%;background:#02D15C;flex:0 0 6px}
+.dashboard{flex:1;min-height:0;width:100%}
+.map-panel{height:100%;min-height:0;position:relative;overflow:hidden;border-radius:18px;background:#e9efeb}
+.map-canvas{position:absolute;inset:0;z-index:1;pointer-events:none}.map-canvas.isReady{pointer-events:auto}
+.fallback{position:absolute;inset:0;z-index:0;background:#eef1ef}.fallback svg{width:100%;height:100%;display:block}
+.map-tools{position:absolute;left:13px;top:13px;z-index:12;width:min(475px,calc(100% - 26px));pointer-events:none;display:flex;flex-direction:column;gap:9px}
+.search-row,.chips-row{display:flex;align-items:center;gap:8px;pointer-events:auto}
+.search-box{height:49px;min-width:0;flex:1;display:flex;align-items:center;gap:10px;border-radius:16px;background:#fff;box-shadow:0 3px 16px #0000001a;padding:0 14px}
+.search-box svg{color:#777;flex-shrink:0}
+.search-box input{min-width:0;flex:1;outline:0;border:0;background:none;font-size:13px;color:#141414;font-weight:600}
+.search-box input::placeholder{color:#949494;font-weight:500}
+.filter-toggle{border:0;height:49px;width:49px;flex:0 0 49px;display:grid;place-items:center;position:relative;border-radius:16px;background:#fff;box-shadow:0 3px 16px #0000001a;color:#141414}
+.filter-toggle.has-filters{outline:2px solid #02D15C}
+.filter-number{position:absolute;right:-3px;top:-4px;color:#fff;background:#111;font-size:9px;font-weight:800;border-radius:50%;min-width:17px;height:17px;display:grid;place-items:center}
+.filter-number:empty{display:none}
+.chips-row{overflow-x:auto;scrollbar-width:none;padding:2px 2px 5px;margin:-2px -2px -5px}.chips-row::-webkit-scrollbar{display:none}
+.city-pill{height:37px;max-width:143px;flex:0 0 auto;display:flex;align-items:center;gap:5px;background:#fff;box-shadow:0 3px 16px #00000016;border-radius:12px;padding:0 8px 0 10px;min-width:0}
+.city-pill svg{flex-shrink:0}
+.city-pill select{border:0;outline:0;background:transparent;color:#121212;font-size:12px;font-weight:800;min-width:0;max-width:120px;cursor:pointer}
+.quick-filter{height:37px;background:#fff;box-shadow:0 3px 16px #00000016;border:0;border-radius:12px;padding:0 12px;font-size:11px;font-weight:800;color:#444;white-space:nowrap;flex:0 0 auto}
+.quick-filter.on{background:#111;color:#fff}
+.filter-sheet{position:absolute;left:13px;top:73px;z-index:30;width:min(360px,calc(100% - 26px));max-height:calc(100% - 86px);overflow:auto;background:#fff;border:1px solid #ededed;box-shadow:0 12px 45px #0003;border-radius:20px;padding:18px}
+.filter-sheet-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px;gap:10px}
+.filter-sheet-top strong{font-size:18px;font-weight:800;letter-spacing:-.65px}
+.filter-close{height:28px;width:28px;border:0;border-radius:50%;background:#f2f2f2;font-size:21px;display:grid;place-items:center;line-height:1}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
+.field span{font-size:12px;font-weight:600;color:#888}
+.field select{width:100%;min-height:47px;border:0;outline:0;border-radius:13px;background:#f3f3f3;padding:0 12px;color:#151515;font-size:13px;font-weight:700}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.status{font-size:11px;line-height:1.5;color:#888;margin:8px 0 13px}
+.geo-help{margin:10px 0;border-radius:12px;background:#fff9eb;border:1px solid #eecf99;padding:12px;font-size:11px;line-height:1.5;color:#776441}.geo-help b{display:block;margin-bottom:5px}.err-detail{white-space:pre-wrap;font-size:10px}
+.reset-filters{width:100%;border:0;border-radius:11px;background:#111;color:#fff;padding:12px;font-size:12px;font-weight:800}
+.map-head{display:none}
+.map-bottom{position:absolute;z-index:8;left:13px;bottom:14px;right:13px;display:flex;align-items:flex-end;justify-content:flex-start;pointer-events:none}
+.map-summary{display:flex;flex-direction:column;gap:2px;max-width:min(275px,90%);border-radius:14px;background:#fff;box-shadow:0 3px 20px #0000001c;padding:10px 13px;pointer-events:auto}
+.map-summary strong{font-size:13px;font-weight:800;line-height:1.3}.map-summary span{font-size:10px;color:#858585;font-weight:600;line-height:1.45}
+.map-fail{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);z-index:4;background:#fff;max-width:270px;padding:15px;border-radius:16px;box-shadow:0 8px 35px #0002;font-size:12px;font-weight:700;text-align:center;line-height:1.5}
+/* Custom Avito-like location dots. Clicking any cluster immediately shows shifts. */
+.shift-map-dot{height:28px;width:28px;border-radius:50%;border:3px solid #fff;background:#009CF6;box-shadow:0 2px 9px #0004;position:absolute;left:-14px;top:-14px;display:flex;align-items:center;justify-content:center;font:bold 12px Manrope,Arial,sans-serif;color:#fff;cursor:pointer}
+.shift-map-dot.multi{height:35px;width:35px;left:-17.5px;top:-17.5px;background:#008fee;font-size:12px}
+.shift-map-dot:hover{background:#0071d4}
+/* Clicked cluster opens this list; otherwise the entire screen belongs to the map. */
+.shifts-drawer{position:absolute;z-index:22;right:15px;top:15px;bottom:15px;width:min(376px,calc(100% - 30px));display:flex;flex-direction:column;overflow:hidden;border-radius:23px;background:#fff;box-shadow:0 12px 45px rgba(0,0,0,.20);border:1px solid #f1f1f1}
+.drawer-grip{display:none}
+.drawer-top{padding:18px 18px 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.drawer-kicker{font-size:10px;font-weight:800;letter-spacing:.8px;color:#888}
+.drawer-close{display:grid;place-items:center;width:31px;height:31px;flex:0 0 auto;border:0;border-radius:50%;background:#f3f3f3;font-size:21px;line-height:1}
+.drawer-title{margin:8px 18px 0;font-weight:800;font-size:19px;line-height:1.27;letter-spacing:-.6px;overflow-wrap:anywhere}
+.drawer-sub{margin:6px 18px 14px;font-size:12px;color:#888;line-height:1.5}
+.drawer-list{flex:1;min-height:0;overflow:auto;padding:0 11px 6px;scrollbar-width:thin;overscroll-behavior:contain}
+.drawer-shift{display:block;color:#141414;text-decoration:none;background:#fff;border:1px solid #ededed;border-radius:17px;margin:0 0 8px;padding:14px 13px}
+.drawer-shift:hover,.drawer-shift:focus-visible{border-color:#02D15C;outline:0;background:#f8fffa}
+.drawer-shift.selected{border-color:#02D15C;background:#f7fff9}
+.drawer-item-top{display:flex;justify-content:space-between;gap:10px}
+.drawer-brand{font-size:12px;color:#888;font-weight:650}
+.drawer-price{font-size:19px;font-weight:800;white-space:nowrap;letter-spacing:-.55px}
+.drawer-job{font-size:14px;font-weight:800;line-height:1.35;margin:7px 0}
+.drawer-datetime{font-size:11px;color:#444;font-weight:700}
+.drawer-address{font-size:11px;color:#999;line-height:1.45;margin:5px 0 11px;overflow-wrap:anywhere}
+.drawer-action{display:block;background:#02D15C;color:#111;text-align:center;border-radius:10px;padding:10px 8px;font-size:12px;font-weight:800}
+.drawer-no-link{display:block;border-radius:10px;background:#f1f1f1;color:#777;text-align:center;padding:11px;font-size:11px;font-weight:700}
+.drawer-more{margin:0 12px 9px;background:#f3f3f3;border:0;border-radius:11px;font-size:12px;font-weight:700;padding:12px}
+.drawer-footer{padding:10px 18px 15px;border-top:1px solid #f1f1f1}.drawer-footer a{font-size:11px;color:#555;text-decoration:none;font-weight:750}
+@media(max-width:700px){
+ .shell{padding:7px 8px 8px;gap:6px}
+ .top{height:42px;padding:0 4px}.logo{width:32px;height:32px;flex-basis:32px;border-radius:10px;font-size:21px}.h1{font-size:17px}
+ .source{display:none}
+ .map-panel{border-radius:14px}
+ .map-tools{top:10px;left:10px;width:calc(100% - 20px);gap:8px}
+ .search-box{height:46px;border-radius:14px}.search-box input{font-size:12px}
+ .filter-toggle{height:46px;width:46px;flex-basis:46px;border-radius:14px}
+ .chips-row{gap:6px}.quick-filter{height:35px;border-radius:11px;padding:0 11px}.city-pill{height:35px;border-radius:11px}
+ .filter-sheet{top:67px;left:10px;width:calc(100% - 20px);max-height:calc(100% - 79px)}
+ .map-bottom{bottom:11px;left:10px;right:10px}.map-summary{padding:9px 11px}
+ .shifts-drawer{top:auto;left:7px;right:7px;bottom:7px;width:auto;max-height:min(66%,510px);border-radius:22px;box-shadow:0 -4px 35px #0003}
+ .drawer-grip{display:block;width:36px;height:4px;flex:0 0 auto;border-radius:8px;background:#dedede;margin:8px auto 0}
+ .drawer-top{padding-top:7px}.drawer-title{font-size:18px}.drawer-shift{padding:12px}
+}
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head><body>
+<main class="shell">
+ <header class="top"><div class="brand"><div class="logo" aria-hidden="true">↗</div><div class="h1">Смены рядом</div></div><div class="source"><span class="dot"></span><span id="sourceTag">Google Sheets · подключение</span></div></header>
+ <div class="dashboard" id="dashboard"><section class="map-panel" aria-label="Карта смен">
+<div class="fallback" id="fallback"><svg preserveaspectratio="xMidYMid slice" viewbox="0 0 760 700" xmlns="http://www.w3.org/2000/svg"><rect fill="#eaf0ec" height="700" width="760"></rect><g fill="#dbe8dd"><rect height="170" rx="28" width="180" x="20" y="20"></rect><rect height="110" rx="28" width="160" x="275" y="90"></rect><rect height="200" rx="28" width="220" x="500" y="30"></rect><rect height="170" rx="28" width="230" x="5" y="390"></rect><rect height="150" rx="28" width="140" x="310" y="420"></rect><rect height="210" rx="28" width="170" x="525" y="430"></rect></g><path d="M-50 295C180 242 265 415 435 326S680 270 840 365" fill="none" stroke="#badfeb" stroke-width="40"></path><path d="M-50 295C180 242 265 415 435 326S680 270 840 365" fill="none" stroke="#d5eff7" stroke-width="27"></path><g fill="none" stroke="#fff" stroke-width="18"><path d="M30 -40L350 750"></path><path d="M330 -60L180 750"></path><path d="M690 -50L390 750"></path><path d="M-50 130L810 550"></path><path d="M-50 570L810 70"></path><path d="M-50 615L810 590"></path></g><g fill="none" stroke="#d7ded8" stroke-width="1.5"><path d="M30 -40L350 750"></path><path d="M330 -60L180 750"></path><path d="M690 -50L390 750"></path><path d="M-50 130L810 550"></path><path d="M-50 570L810 70"></path><path d="M-50 615L810 590"></path></g></svg></div>
+ <div id="ymap" class="map-canvas"></div>
+ <div class="map-tools">
+  <div class="search-row">
+   <label class="search-box" aria-label="Поиск смен"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Задание, бренд или адрес" autocomplete="off" /></label>
+   <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="filterSheet" aria-label="Дата и бренд"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="white"/><circle cx="16" cy="17" r="2" fill="white"/></svg><span id="filterCount" class="filter-number"></span></button>
+  </div>
+  <div class="chips-row">
+   <label class="city-pill" aria-label="Город"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><select id="city"><option value="">Все города</option></select></label>
+   <button class="quick-filter on" data-quick="all" type="button">Все смены</button>
+   <button class="quick-filter" data-quick="today" type="button">Сегодня</button>
+   <button class="quick-filter" data-quick="tomorrow" type="button">Завтра</button>
+   <button class="quick-filter" data-quick="weekend" type="button">Выходные</button>
+  </div>
+ </div>
+ <aside class="filter-sheet" id="filterSheet" hidden>
+   <div class="filter-sheet-top"><strong>Фильтры смен</strong><button class="filter-close" id="filterClose" aria-label="Закрыть фильтры" type="button">×</button></div>
+   <div class="row2"><label class="field"><span>Дата</span><select id="day"><option value="">Все даты</option></select></label><label class="field"><span>Бренд</span><select id="brand"><option value="">Все бренды</option></select></label></div>
+   <div class="status" id="state">Загружаем смены из Google Sheets…</div>
+   <div class="geo-help" id="geoHelp" hidden><b>Не все смены нанесены на карту</b><div id="geoMessage"></div><div id="geoError" class="err-detail"></div></div>
+   <button class="reset-filters" id="filterReset" type="button">Сбросить фильтры</button>
+ </aside>
+ <div class="map-head"><b id="mapCity">Москва</b></div>
+ <div id="mapHint" hidden></div>
+<section aria-label="Смены в выбранной точке" class="shifts-drawer" hidden="" id="shiftDrawer" role="dialog">
+<div aria-hidden="true" class="drawer-grip"></div>
+<div class="drawer-top"><div class="drawer-kicker" id="drawerKicker">ДОСТУПНЫЕ СМЕНЫ</div><button aria-label="Закрыть список смен" class="drawer-close" id="drawerClose" type="button">×</button></div>
+<h3 class="drawer-title" id="drawerTitle">Смены</h3>
+<p class="drawer-sub" id="drawerSub"></p>
+<div class="drawer-list" id="drawerList"></div>
+<button class="drawer-more" hidden="" id="drawerMore" type="button">Показать ещё</button>
+<div class="drawer-footer" id="drawerFooter"></div>
+</section>
+ <div class="map-bottom"><div class="map-summary"><strong id="count">Загружаем смены</strong><span id="mapStatus">Подключаем карту…</span><span id="places">—</span></div></div>
+ </section></div>
+</main>
+<script>
+'use strict';
+if (window.Telegram && window.Telegram.WebApp) {
+  const telegramApp = window.Telegram.WebApp;
+  telegramApp.ready();
+  telegramApp.expand();
+}
+const SHEET='14sA0J06RdjW8OFSCoEF0vLXiRSWe81kq3m0Mv8wqClM';
+const GID='142160930';
+// Ключ JavaScript API из присланной карты клиник. Геокодер НЕ используется.
+const YANDEX_KEY='aad15457-a229-425d-99e5-b52919f92c7d';
+const el=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtMoney=n=>Number.isFinite(n)?Math.round(n).toLocaleString('ru-RU')+' ₽':'Цена не указана';
+const fmtDate=iso=>{if(!iso)return 'Дата не указана';const [y,m,d]=iso.split('-');return `${d}.${m}.${y}`};
+const pad=n=>String(n).padStart(2,'0');
+const coordOK=p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180&&p[0]!==0&&p[1]!==0;
+const txt=c=>{if(!c)return '';return String(c.f!==undefined&&c.f!==null&&String(c.f).trim()?c.f:c.v??'').trim()};
+function num(c){
+  let v=c?.v??c?.f;
+  if(v===null||v===undefined||String(v).trim()==='')return NaN;
+  if(typeof v==='number')return v;
+  let t=String(v).replace(/[\s\u00a0\u202f]/g,'').replace(/[^0-9,.\-]/g,'');
+  if(t.includes(',')&&t.includes('.'))t=t.replace(/,/g,'');
+  else t=t.replace(',','.');
+  if(!t)return NaN;
+  const n=Number(t);return Number.isFinite(n)?n:NaN;
+}
+function day(s){
+  s=String(s||'').trim();
+  let m=s.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})/);
+  if(m)return `${m[1]}-${pad(+m[2]+1)}-${pad(+m[3])}`;
+  m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m)return `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  return m?`${m[1]}-${pad(m[2])}-${pad(m[3])}`:'';
+}
+function time(c){
+  const s=txt(c);let m=s.match(/Date\([^)]*,(\d{1,2}),(\d{1,2})/);
+  if(m)return `${pad(m[1])}:${pad(m[2])}`;
+  m=s.match(/^(\d{1,2}):(\d{2})/);
+  return m?`${pad(m[1])}:${m[2]}`:s;
+}
+function parseSheet(r){
+  if(r?.status!=='ok'||!r.table)throw Error(r?.errors?.[0]?.detailed_message||'Google Sheets не вернул данные');
+  const out=[];
+  // Лист: A город, B бренд, C адрес, D ссылка, E тип, F дата, G/H часы, J оплата, M/N широта/долгота.
+  for(const [i,row] of (r.table.rows||[]).entries()){
+    const c=row?.c||[],city=txt(c[0]),brand=txt(c[1]),address=txt(c[2]),date=day(txt(c[5]));
+    if(!city||!address||!date||city.toLowerCase()==='город')continue;
+    const lat=num(c[12]),lon=num(c[13]);
+    out.push({id:'s'+i,city,brand,address,url:txt(c[3]),task:txt(c[4]),date,start:time(c[6]),end:time(c[7]),price:num(c[9]),coords:coordOK([lat,lon])?[lat,lon]:null});
+  }
+  if(!out.length)throw Error('В таблице не обнаружены строки со сменами');
+  return out;
+}
+function fetchSheet(){
+  return new Promise((resolve,reject)=>{
+    const cb='__avitoShifts_'+Math.random().toString(36).slice(2),script=document.createElement('script');let finished=false;
+    const done=(err,data)=>{if(finished)return;finished=true;clearTimeout(timer);try{delete window[cb]}catch(_){}script.remove();err?reject(err):resolve(data)};
+    const timer=setTimeout(()=>done(Error('Google Sheets не ответил за 18 секунд')),18000);
+    window[cb]=r=>{try{done(null,parseSheet(r))}catch(e){done(e)}};
+    const params=new URLSearchParams({gid:GID,headers:'0',tqx:'out:json;responseHandler:'+cb,_:String(Date.now())});
+    script.src=`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?${params}`;
+    script.onerror=()=>done(Error('Таблица недоступна: проверь доступ «Все, у кого есть ссылка»'));
+    document.head.append(script);
+  });
+}
+let all=[],filtered=[],active=null,ymapsRef=null,map=null,clusterer=null,markers=[],quick='all';
+const plural=(n,forms)=>{const a=Math.abs(n)%100,b=a%10;return a>10&&a<20?forms[2]:b>1&&b<5?forms[1]:b===1?forms[0]:forms[2]};
+function options(id,vals,allName){
+  const x=el(id),previous=x.value;x.replaceChildren(new Option(allName,''));
+  vals.forEach(v=>x.add(new Option(v,v)));x.value=vals.includes(previous)?previous:'';
+}
+function updateOptions(){
+  options('city',[...new Set(all.map(s=>s.city))].sort((a,b)=>a.localeCompare(b,'ru')),'Все города');
+  options('brand',[...new Set(all.map(s=>s.brand))].sort((a,b)=>a.localeCompare(b,'ru')),'Все бренды');
+  const d=el('day'),previous=d.value,dates=[...new Set(all.map(s=>s.date))].sort();
+  d.replaceChildren(new Option('Все даты',''));dates.forEach(x=>d.add(new Option(fmtDate(x),x)));
+  d.value=dates.includes(previous)?previous:'';
+  // Исходный экран удобнее показывать для одного города, не для всей России.
+  if(!el('city').value&&all.length)el('city').value=all.some(s=>s.city==='Москва')?'Москва':all[0].city;
+}
+function localDay(d){return [d.getFullYear(),pad(d.getMonth()+1),pad(d.getDate())].join('-')}
+function matchQuick(s){
+  if(quick==='all')return true;
+  const t=new Date();t.setHours(12,0,0,0);
+  if(quick==='today')return s.date===localDay(t);
+  if(quick==='tomorrow'){t.setDate(t.getDate()+1);return s.date===localDay(t)}
+  if(quick==='weekend'){
+    const target=new Date(s.date+'T12:00:00');const diff=Math.round((target-t)/86400000);
+    return diff>=0&&diff<=7&&(target.getDay()===0||target.getDay()===6);
+  }
+  return true;
+}
+function renderCards(){/* Map-first interface: no permanent shift list. */}
+// Панель со сменами открывается одним нажатием на точку или кластер.
+let drawerItems=[],drawerOffset=0,drawerTitle='',drawerSelected=null;
+const drawerBatch=30;
+function shiftsFromPlacemarks(placemarks){
+  const result=new Map();
+  for(const mark of placemarks){
+    for(const shift of (mark._siteShifts||[]))result.set(shift.id,shift);
+  }
+  return [...result.values()];
+}
+function closeDrawer(){
+  drawerItems=[];drawerOffset=0;drawerSelected=null;el('shiftDrawer').hidden=true;
+}
+function renderDrawer(){
+  const sorted=drawerItems;
+  el('drawerTitle').textContent=drawerTitle;
+  const count=sorted.length;
+  const uniquePlaces=new Set(sorted.map(s=>s.city+'|'+s.address)).size;
+  const minPrice=Math.min(...sorted.filter(s=>Number.isFinite(s.price)).map(s=>s.price));
+  el('drawerKicker').textContent=`${count} ${plural(count,['СМЕНА','СМЕНЫ','СМЕН'])}`;
+  el('drawerSub').textContent=`${uniquePlaces} ${plural(uniquePlaces,['адрес','адреса','адресов'])}`+(Number.isFinite(minPrice)?` · от ${fmtMoney(minPrice)}`:'');
+  const host=el('drawerList');host.replaceChildren();
+  const frag=document.createDocumentFragment();
+  const visible=sorted.slice(0,drawerOffset+drawerBatch);
+  for(const s of visible){
+    const validLink=/^https:\/\//i.test(s.url);
+    const item=document.createElement(validLink?'a':'div');
+    item.className='drawer-shift'+(s.id===drawerSelected?' selected':'');
+    if(validLink){item.href=s.url;item.target='_blank';item.rel='noopener noreferrer';item.setAttribute('aria-label',`Посмотреть смену ${s.task} за ${fmtMoney(s.price)} на Авито`)}
+    item.innerHTML=`<div class="drawer-item-top"><span class="drawer-brand">${esc(s.brand||'Работодатель')}</span><span class="drawer-price">${fmtMoney(s.price)}</span></div><div class="drawer-job">${esc(s.task||'Смена')}</div><div class="drawer-datetime">${fmtDate(s.date)} · ${esc(s.start)}–${esc(s.end)}</div><div class="drawer-address">${esc(s.address)}</div>${validLink?'<span class="drawer-action">Посмотреть смену ↗</span>':'<span class="drawer-no-link">Ссылка на смену отсутствует</span>'}`;
+    frag.append(item);
+  }
+  host.append(frag);
+  el('drawerMore').hidden=visible.length===sorted.length;
+  el('drawerMore').textContent=`Показать ещё (${sorted.length-visible.length})`;
+  const first=sorted[0];
+  if(first?.coords){
+    const [lat,lon]=first.coords;
+    el('drawerFooter').innerHTML=`<a target="_blank" rel="noopener noreferrer" href="https://yandex.ru/maps/?ll=${lon},${lat}&z=16&pt=${lon},${lat},pm2gnm">Открыть адрес на Яндекс Картах ↗</a>`;
+  }else el('drawerFooter').textContent='';
+}
+function openDrawer(shifts,title,selectedId=null){
+  if(!shifts.length){closeDrawer();return}
+  drawerItems=[...shifts].sort((a,b)=>a.date.localeCompare(b.date)||b.price-a.price);
+  drawerTitle=title;
+  drawerSelected=selectedId;
+  drawerOffset=0;
+  renderDrawer();
+  el('shiftDrawer').hidden=false;
+  el('drawerList').scrollTop=0;
+}
+function selectShift(id,focus){
+  active=filtered.find(s=>s.id===id)||null;
+  renderCards();
+  if(!active){closeDrawer();return}
+  const near=active.coords?filtered.filter(s=>s.coords&&s.coords[0]===active.coords[0]&&s.coords[1]===active.coords[1]):[active];
+  openDrawer(near,active.address,active.id);
+  // Выбор из списка переносит карту к адресу, но НЕ увеличивает масштаб и НЕ открывает штатный балун.
+  if(focus&&active.coords&&map){
+    const movement=map.panTo(active.coords,{duration:220});
+    if(movement&&typeof movement.catch==='function')movement.catch(()=>{});
+  }
+}
+function clearMap(){
+  if(!map)return;
+  if(clusterer){map.geoObjects.remove(clusterer);clusterer=null}
+  markers=[];
+}
+function redrawMap(){
+  if(!map)return;
+  clearMap();closeDrawer();
+  if(!filtered.length){el('mapStatus').textContent='Нет смен по фильтрам';el('mapHint').textContent='Выберите другой город, дату или бренд.';el('geoHelp').hidden=true;return}
+  const invalid=filtered.filter(s=>!s.coords).length;
+  const sites=new Map();
+  for(const s of filtered){if(!s.coords)continue;const key=s.coords.map(x=>x.toFixed(6)).join(',');if(!sites.has(key))sites.set(key,[]);sites.get(key).push(s)}
+  if(!sites.size){
+    el('mapStatus').textContent='Нет координат';el('mapHint').textContent='На карте появляются только смены с заполненными M/N.';
+    el('geoHelp').hidden=false;el('geoMessage').textContent=`У ${invalid} смен не указаны координаты в M/N. Проверь таблицу.`;return;
+  }
+  const DotLayout=ymapsRef.templateLayoutFactory.createClass('<div class="shift-map-dot {{ properties.dotClass }}">{{ properties.dotText }}</div>');
+  const placeMarks=[];
+  for(const shifts of sites.values()){
+    const s=shifts[0];
+    const mark=new ymapsRef.Placemark(s.coords,{
+      hintContent:`${shifts.length} ${plural(shifts.length,['смена','смены','смен'])} · ${esc(s.address)}`,
+      dotText:shifts.length>1?String(shifts.length):'',
+      dotClass:shifts.length>1?'multi':'',
+    },{
+      iconLayout:DotLayout,
+      // Без явной интерактивной области кастомные HTML-метки не принимают клики.
+      iconShape:{type:'Circle',coordinates:[0,0],radius:21},
+      openBalloonOnClick:false,
+      hasBalloon:false,
+      zIndexHover:1000
+    });
+    mark._siteShifts=shifts;
+    mark.events.add('click',e=>{
+      e.stopPropagation?.();
+      active=shifts[0];renderCards();
+      openDrawer(shifts,s.address);
+    });
+    placeMarks.push(mark);markers.push({point:s.coords,mark,ids:shifts.map(x=>x.id)});
+  }
+  clusterer=new ymapsRef.Clusterer({
+    preset:'islands#blueClusterIcons',
+    gridSize:80,
+    clusterDisableClickZoom:true,
+    clusterOpenBalloonOnClick:false,
+    clusterHideIconOnBalloonOpen:false,
+  });
+  // Перехватываем КАЖДЫЙ создаваемый кластер, даже после прокрутки и смены масштаба.
+  clusterer.createCluster=function(center,geoObjects){
+    const cluster=ymapsRef.Clusterer.prototype.createCluster.call(this,center,geoObjects);
+    cluster.events.add('click',e=>{
+      e.stopPropagation?.();
+      const grouped=shiftsFromPlacemarks(cluster.getGeoObjects());
+      active=null;renderCards();
+      openDrawer(grouped,`Смены в этой области`);
+    });
+    cluster.properties.set('hintContent',`${shiftsFromPlacemarks(geoObjects).length} смен — нажмите, чтобы посмотреть`);
+    return cluster;
+  };
+  clusterer.add(placeMarks);map.geoObjects.add(clusterer);
+  const bounds=clusterer.getBounds();
+  if(bounds){
+    try{
+      const p=map.setBounds(bounds,{checkZoomRange:true,zoomMargin:55,duration:160});
+      if(p&&typeof p.then==='function')p.then(()=>{if(map.getZoom()>15)map.setZoom(15)}).catch(()=>{});
+    }catch(e){map.setCenter(placeMarks[0].geometry.getCoordinates(),12)}
+  }
+  el('mapStatus').textContent=`${sites.size} ${plural(sites.size,['точка','точки','точек'])} на карте`;
+  el('mapHint').textContent=`Нажмите точку или кластер — увидите смены · ${filtered.length-invalid} с координатами`;
+  el('geoHelp').hidden=!invalid;
+  if(invalid)el('geoMessage').textContent=`Для ${invalid} смен не заполнены M/N. Эти смены видны в списке, но не отмечены на карте.`;
+}
+function filter(){
+  const c=el('city').value,d=el('day').value,b=el('brand').value,q=el('search').value.toLocaleLowerCase('ru-RU').trim();
+  filtered=all.filter(s=>(!c||s.city===c)&&(!d||s.date===d)&&(!b||s.brand===b)&&matchQuick(s)&&(!q||[s.city,s.brand,s.address,s.task].some(v=>v.toLocaleLowerCase('ru-RU').includes(q))));
+  filtered.sort((a,b)=>a.date.localeCompare(b.date)||b.price-a.price);
+  el('count').textContent=`${filtered.length} ${plural(filtered.length,['смена','смены','смен'])}`;
+  el('places').textContent=`${new Set(filtered.map(s=>s.city+'|'+s.address)).size} адресов`;
+  el('mapCity').textContent=c||'Все города';
+  const n=Number(!!d)+Number(!!b);el('filterCount').textContent=n?String(n):'';el('filterToggle').classList.toggle('has-filters',n>0);
+  if(active&&!filtered.some(s=>s.id===active.id))active=null;
+  renderCards();closeDrawer();redrawMap();
+}
+function loadYandex(){
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script'),timer=setTimeout(()=>reject(Error('Яндекс Карты не ответили за 15 секунд')),15000);
+    s.onload=()=>{clearTimeout(timer);window.ymaps?window.ymaps.ready(()=>resolve(window.ymaps)):reject(Error('API Яндекс Карт недоступен'))};
+    s.onerror=()=>{clearTimeout(timer);reject(Error('Не удалось загрузить Яндекс Карты'))};
+    s.src='https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey='+encodeURIComponent(YANDEX_KEY);
+    document.head.append(s);
+  });
+}
+function toggleFilterSheet(open){
+  const sheet=el('filterSheet');sheet.hidden=!open;
+  el('filterToggle').setAttribute('aria-expanded',String(!!open));
+}
+function start(){
+  el('search').addEventListener('input',filter);
+  ['city','day','brand'].forEach(id=>el(id).addEventListener('change',filter));
+  document.querySelectorAll('[data-quick]').forEach(btn=>btn.addEventListener('click',()=>{
+    quick=btn.dataset.quick;
+    document.querySelectorAll('[data-quick]').forEach(b=>b.classList.toggle('on',b===btn));filter();
+  }));
+  el('drawerClose').onclick=()=>{closeDrawer();active=null;renderCards()};
+  el('filterToggle').onclick=()=>toggleFilterSheet(el('filterSheet').hidden);
+  el('filterClose').onclick=()=>toggleFilterSheet(false);
+  el('filterReset').onclick=()=>{el('search').value='';el('day').value='';el('brand').value='';quick='all';document.querySelectorAll('[data-quick]').forEach(b=>b.classList.toggle('on',b.dataset.quick==='all'));filter();toggleFilterSheet(false)};
+  el('drawerMore').onclick=()=>{const top=el('drawerList').scrollTop;drawerOffset+=drawerBatch;renderDrawer();el('drawerList').scrollTop=top};
+  filter();
+  fetchSheet().then(rows=>{
+    all=rows;updateOptions();filter();
+    const valid=rows.filter(s=>!!s.coords).length;
+    el('sourceTag').textContent='Google Sheets · подключено';
+    el('state').textContent=`Загружено ${rows.length} смен, координаты есть у ${valid}. Точки берутся напрямую из M/N.`;
+  }).catch(e=>{
+    el('sourceTag').textContent='Нет доступа к Google Sheets';
+    el('state').textContent=`Не удалось прочитать таблицу: ${e.message}. Проверь, что доступ по ссылке открыт для просмотра.`;
+    el('mapStatus').textContent='Ожидание данных';
+  });
+  loadYandex().then(y=>{
+    ymapsRef=y;map=new y.Map('ymap',{center:[55.7558,37.6177],zoom:10,controls:['zoomControl']},{suppressMapOpenBlock:true});
+    el('ymap').classList.add('isReady');el('fallback').style.display='none';
+    map.events.add('click',()=>{closeDrawer();toggleFilterSheet(false);active=null;renderCards()});
+    try { const z=map.controls.get('zoomControl'); z?.options?.set('position',{right:12,bottom:85}); }catch(_){}
+    redrawMap();
+  }).catch(e=>{
+    el('mapStatus').textContent='Карта недоступна';
+    el('mapHint').textContent='Не удалось загрузить Яндекс Карту: '+e.message+'. Список смен продолжит работать.';
+    el('fallback').insertAdjacentHTML('beforeend','<div class="map-fail">Невозможно загрузить карту. Проверь подключение к Яндекс Картам.</div>');
+  });
+}
+start();
+
+</script></body></html>
